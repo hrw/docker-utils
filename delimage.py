@@ -11,6 +11,18 @@ import sys
 
 token = ''
 
+def get_images(namespace, repo):
+    base = "https://hub.docker.com/v2/repositories"
+    r = requests.get("{0}/{1}/?page_size=100".format(base, namespace))
+    jsondata = r.json()
+    data = jsondata['results']
+
+    while jsondata['next']:
+        print('fetching another set...', file=sys.stderr)
+        jsondata = requests.get(jsondata['next']).json()
+        data += jsondata['results']
+
+    return data
 
 def get_token():
     try:
@@ -54,6 +66,13 @@ def del_tag(namespace, repo, tag):
 def main(namespace, repo, tag=''):
     global token
     token = get_token()
+
+    images = get_images(namespace, repo)
+    if tag:
+        print("removing {0} tag from images".format(tag))
+        for image in images:
+            if image['name'].startswith(repo):
+                del_tag(namespace, image['name'], tag)
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
