@@ -9,6 +9,8 @@ import os
 import requests
 import sys
 
+token = ''
+
 
 def get_token():
     try:
@@ -43,12 +45,16 @@ def del_tag(namespace, repo, tag):
         (namespace, repo, tag)
 
     r = requests.delete(url, headers={
-        'Authorization': 'JWT %s' % get_token()})
+        'Authorization': 'JWT %s' % token})
 
     if r.status_code == 204:
         print('{0}/{1}:{2} removed'.format(namespace, repo, tag))
 
 
+def main(namespace, repo, tag=''):
+    global token
+    token = get_token()
+
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        del_tag(*sys.argv[1:])
+        main(*sys.argv[1:])
