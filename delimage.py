@@ -4,10 +4,20 @@
 
 import base64
 import getpass
+import http.client
 import json
+import logging
 import os
 import requests
 import sys
+
+http.client.HTTPConnection.debuglevel = 0
+
+# logging.basicConfig()
+# logging.getLogger().setLevel(logging.DEBUG)
+# requests_log = logging.getLogger("requests.packages.urllib3")
+# requests_log.setLevel(logging.DEBUG)
+# requests_log.propagate = True
 
 token = ''
 
