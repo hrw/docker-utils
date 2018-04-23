@@ -28,7 +28,7 @@ def get_images(namespace, repo):
     data = jsondata['results']
 
     while jsondata['next']:
-        print('fetching another set...', file=sys.stderr)
+        logging.info('fetching another set...')
         jsondata = requests.get(jsondata['next']).json()
         data += jsondata['results']
 
@@ -66,6 +66,8 @@ def del_tag(namespace, repo, tag):
     url = 'https://hub.docker.com/v2/repositories/%s/%s/tags/%s/' % \
         (namespace, repo, tag)
 
+    logging.debug('Removing {0}/{1}:{2}'.format(namespace, repo, tag))
+
     r = requests.delete(url, headers={
         'Authorization': 'JWT %s' % token})
 
@@ -79,7 +81,7 @@ def main(namespace, repo, tag=''):
 
     images = get_images(namespace, repo)
     if tag:
-        print("removing {0} tag from images".format(tag))
+        logging.info("removing {0} tag from images".format(tag))
         for image in images:
             if image['name'].startswith(repo):
                 del_tag(namespace, image['name'], tag)
