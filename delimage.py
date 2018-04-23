@@ -21,6 +21,7 @@ http.client.HTTPConnection.debuglevel = 0
 
 token = ''
 
+
 def get_images(namespace, repo):
     base = "https://hub.docker.com/v2/repositories"
     r = requests.get("{0}/{1}/?page_size=100".format(base, namespace))
@@ -33,6 +34,7 @@ def get_images(namespace, repo):
         data += jsondata['results']
 
     return data
+
 
 def get_token():
     try:
@@ -50,7 +52,7 @@ def get_token():
         password = getpass.getpass('Enter Docker hub password: ')
 
     r = requests.post('https://hub.docker.com/v2/users/login/',
-            data={'username': username, 'password': password})
+                      data={'username': username, 'password': password})
 
     token = ""
     if r.status_code == 200:
@@ -63,13 +65,13 @@ def get_token():
 
 
 def del_tag(namespace, repo, tag):
-    url = 'https://hub.docker.com/v2/repositories/%s/%s/tags/%s/' % \
-        (namespace, repo, tag)
+    url = 'https://hub.docker.com/v2/repositories/{0}/{1}/tags/{2}/'.format(
+            namespace, repo, tag)
 
     logging.debug('Removing {0}/{1}:{2}'.format(namespace, repo, tag))
 
     r = requests.delete(url, headers={
-        'Authorization': 'JWT %s' % token})
+        'Authorization': 'JWT {0}'.format(token)})
 
     if r.status_code == 204:
         print('{0}/{1}:{2} removed'.format(namespace, repo, tag))
@@ -85,6 +87,7 @@ def main(namespace, repo, tag=''):
         for image in images:
             if image['name'].startswith(repo):
                 del_tag(namespace, image['name'], tag)
+
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
