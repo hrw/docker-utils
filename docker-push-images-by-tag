@@ -15,5 +15,6 @@ for image in $(cat $list_file)
 do
 	echo "Pushing ${current} of ${amount}: ${image}"
 	docker push $image
+	((current++))
 done
 
