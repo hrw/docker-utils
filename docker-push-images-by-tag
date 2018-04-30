@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# SPDX-License-Identifier: MIT
+
+tag_to_push=$1
+
+list_file=$(mktemp)
+
+docker images | grep $tag_to_push | cut -d " " -f 1 | sort -u > $list_file
+
+export current=1
+export amount=$(wc -l $list_file | cut -d " " -f 1)
+
+for image in $(cat $list_file)
+do
+	echo "Pushing ${current} of ${amount}: ${image}"
+	docker push $image
+done
+
