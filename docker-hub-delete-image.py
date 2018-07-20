@@ -17,32 +17,28 @@ http.client.HTTPConnection.debuglevel = 0
 # requests_log.setLevel(logging.DEBUG)
 # requests_log.propagate = True
 
-token = ''
 
-def del_tag(namespace, repo, tag):
-    url = 'https://hub.docker.com/v2/repositories/{0}/{1}/tags/{2}/'.format(
-            namespace, repo, tag)
+def del_image(namespace, repo):
+    url = 'https://hub.docker.com/v2/repositories/{0}/{1}/'.format(
+            namespace, repo)
 
-    logging.debug('Removing {0}/{1}:{2}'.format(namespace, repo, tag))
+    logging.debug('Removing {0}/{1}'.format(namespace, repo))
 
     r = requests.delete(url, headers={
         'Authorization': 'JWT {0}'.format(token)})
 
     if r.status_code in fine_return_codes:
-        print('{0}/{1}:{2} removed'.format(namespace, repo, tag))
+        print('{0}/{1} removed'.format(namespace, repo))
 
 
-def main(namespace, repo, tag):
+def main(namespace, repo, tag=''):
     global token
-
     token = get_token()
-    images = get_images(namespace, repo)
 
-    logging.info("removing {0} tag from images".format(tag))
+    images = get_images(namespace, repo)
     for image in images:
         if image['name'].startswith(repo):
-            del_tag(namespace, image['name'], tag)
-
+            del_image(namespace, image['name'])
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
